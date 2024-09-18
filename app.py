@@ -4,15 +4,14 @@ from ariadne import QueryType, make_executable_schema, gql, graphql_sync
 from flask_cors import CORS
 import logging
 
-# Configure logging
+
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-# Load data from CSV files
+
 def load_data():
     try:
-        # Load bank branches data from CSV
-        df_branches = pd.read_csv('bank_branches.csv')  # Replace 'app.csv' with the correct CSV file name if different
-        # Fill NaN values with default values to prevent issues
+        
+        df_branches = pd.read_csv('bank_branches.csv')  
         df_branches['branch'] = df_branches['branch'].fillna('Unknown')
         df_branches['bank_name'] = df_branches['bank_name'].fillna('Unknown')
         df_branches['ifsc'] = df_branches['ifsc'].fillna('Unknown')
@@ -21,10 +20,10 @@ def load_data():
         logging.error(f"Error loading data: {e}")
         return []
 
-# Sample data
+
 BANKS = load_data()
 
-# Define schema
+
 type_defs = gql("""
     type Bank {
         name: String!
@@ -46,7 +45,7 @@ query = QueryType()
 @query.field("branches")
 def resolve_branches(_, info):
     try:
-        # Return the data in the expected format with proper bank info
+       
         return [
             {
                 "branch": branch["branch"],
@@ -62,7 +61,7 @@ def resolve_branches(_, info):
 schema = make_executable_schema(type_defs, query)
 
 app = Flask(__name__)
-CORS(app)  # Enable CORS if needed for development
+CORS(app)  
 
 @app.route('/gql', methods=['POST'])
 def handle_graphql_request():
